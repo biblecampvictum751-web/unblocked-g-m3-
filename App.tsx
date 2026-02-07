@@ -16,13 +16,18 @@ const App: React.FC = () => {
     try {
       const saved = localStorage.getItem('nova_arcade_favorites');
       return saved ? JSON.parse(saved) : [];
-    } catch {
+    } catch (err) {
+      console.warn('LocalStorage is not available:', err);
       return [];
     }
   });
 
   useEffect(() => {
-    localStorage.setItem('nova_arcade_favorites', JSON.stringify(favorites));
+    try {
+      localStorage.setItem('nova_arcade_favorites', JSON.stringify(favorites));
+    } catch (err) {
+      console.warn('Failed to save favorites:', err);
+    }
   }, [favorites]);
 
   const toggleFavorite = (gameId: string, e?: React.MouseEvent | React.TouchEvent) => {
@@ -72,7 +77,7 @@ const App: React.FC = () => {
         setSearchQuery={setSearchQuery}
       />
 
-      <main className="flex-grow container mx-auto px-4 py-8 max-w-7xl">
+      <main id="main-content" className="flex-grow container mx-auto px-4 py-8 max-w-7xl">
         {viewState === 'grid' ? (
           <div className="space-y-12 animate-in fade-in duration-700">
             {searchQuery === '' && selectedCategory === 'All' && (
@@ -120,7 +125,7 @@ const App: React.FC = () => {
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-900 pb-8">
               <h2 className="text-3xl font-black flex items-center gap-3">
-                <span className="w-1.5 h-10 bg-indigo-500 rounded-full"></span>
+                <span className="w-1.5 h-10 bg-indigo-500 rounded-full" aria-hidden="true"></span>
                 {selectedCategory === 'All' ? 'All Games' : selectedCategory === 'Favorites' ? 'My Library' : `${selectedCategory}`}
               </h2>
               <FilterBar 
