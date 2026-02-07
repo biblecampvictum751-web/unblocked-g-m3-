@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { GAMES_DATA } from './data/games';
 import Header from './components/Header';
@@ -8,23 +7,28 @@ import GamePlayer from './components/GamePlayer';
 import Footer from './components/Footer';
 import { Game } from './types';
 
-const App = () => {
+const App: React.FC = () => {
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [viewState, setViewState] = useState<'grid' | 'play'>('grid');
   const [favorites, setFavorites] = useState<string[]>(() => {
-    const saved = localStorage.getItem('nova_arcade_favorites');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('nova_arcade_favorites');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
 
   useEffect(() => {
     localStorage.setItem('nova_arcade_favorites', JSON.stringify(favorites));
   }, [favorites]);
 
-  // Fix: Made the 'e' parameter optional to allow calling toggleFavorite with only a gameId as seen on line 156
   const toggleFavorite = (gameId: string, e?: React.MouseEvent | React.TouchEvent) => {
-    if (e) e.stopPropagation();
+    if (e && typeof e.stopPropagation === 'function') {
+      e.stopPropagation();
+    }
     setFavorites(prev => 
       prev.includes(gameId) 
         ? prev.filter(id => id !== gameId) 
@@ -84,7 +88,7 @@ const App = () => {
                   <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]">
                     Your Personal <span className="text-indigo-200">Cloud Arcade</span>
                   </h1>
-                  <p className="text-xl text-indigo-500 bg-white inline-block px-4 py-1 rounded-lg font-bold mb-8 transform -rotate-1">
+                  <p className="text-xl text-indigo-600 bg-white inline-block px-4 py-1 rounded-lg font-bold mb-8 transform -rotate-1">
                     100% UNBLOCKED & FREE
                   </p>
                   <p className="text-lg text-indigo-100 mb-8 opacity-90 max-w-lg">

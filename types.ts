@@ -18,5 +18,3 @@ export interface Game {
   description: string;
   featured?: boolean;
 }
-
-export type ViewState = 'grid' | 'play';
